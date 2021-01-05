@@ -1,0 +1,12 @@
+web:
+  image: node
+  command: npm start
+  ports:
+    - "3000:3000"
+  working_dir: /src
+  environment:
+    DEBUG: 'false'
+    BIGE_SECRET: 'BSSDK_API_ENCRYPTION_SECRET_KEY_FROM_APIM.BIGE.DEV'
+    PORT: 3000
+  volumes:
+    - ./:/src
