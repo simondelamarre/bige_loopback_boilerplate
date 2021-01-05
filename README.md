@@ -111,7 +111,7 @@ by using bigeMiddleWare the security definition can be overwritted to enable som
       '200': PING_RESPONSE,
       '401': customResponse(BIGE_UNAUTHORIZED, {scope:["myCustomScope"]})
     },
-    security: secureByBige({scope:["myCustomScope/{id}"]})
+    security: secureByBige(BIGE_API_STRATEGY, {scope:["myCustomScope/{id}"]})
   })
   @intercept(toInterceptor(new bigeMiddleWare(
     "bige-api-key",
@@ -139,12 +139,12 @@ One of the nice feature of ou MiddleWare is to allow your to variabilize your sc
 for example, you want to setting up an access right on a specific endpoint to a specikfic user :
 
 ```typescript
-  @get('/endpooint/{id}', {
+  @get('/endpoint/{id}', {
     responses: {
       '200': PING_RESPONSE,
       '401': customResponse(BIGE_UNAUTHORIZED, {scope:["myCustomScope/{id}"]}),
     },
-    security: secureByBige({scope:["myCustomScope/{id}"]})
+    security: secureByBige(BIGE_API_STRATEGY, {scope:["myCustomScope/{id}"]})
   })
   @intercept(toInterceptor(new bigeMiddleWare(
     "bige-api-key",
@@ -190,14 +190,14 @@ We recommand you to bypass your authentication while your api requests are comin
 Considere that APIM will be a single signature for any, also you can easily chain your authentication with our middleware like :
 
 ```javascript
-  @get('/endpooint/{id}', {
+  @get('/endpoint/{id}', {
     responses: {
       '200': PING_RESPONSE,
       '401': YOUR_AUTH_REESPONSE,
     },
     security: [
       YOUR_OAS_SECURITY_STRATEGY_SCHEME, // one of listed before or custom header with a custom api key name
-      customResponse(BIGE_UNAUTHORIZED, {scope:["myCustomScope/{id}"]})
+      secureByBige(BIGE_API_STRATEGY, {scope:["myCustomScope/{id}"]})
     ]
   })
   @intercept(toInterceptor(new bigeMiddleWare(
@@ -229,6 +229,94 @@ Considere that APIM will be a single signature for any, also you can easily chai
 
 By chaining our MiddleWare with youur authentication strategy you ensure your proper security and geet the benefits of any Bige MiddleWare strategy over your also you assume that your security scheme will not correspond to the APIM documentation so anyway you have to define a security schemes Array who combine your Strategy with some of bige strategies.
 
+## Retrieve dataset in your handler
+
+By using our MiddleWare, you'll be able to retrieve somes precious informations directly in youur endpoint Handler such as Application ID, user ID or api ID (...)
+
+This is a sample Handler that retrieve an app Key and an user Key with IDs :
+
+```typescript
+  @get('/endpoint/',
+  {
+    summary:"a sample endpoint",
+    description:"this endpoint is secured by app and logged user strategies",
+    responses: {
+      '200': ENDPOINT_RESPONSE, // think about sample and description to get better documentation on APIM
+      '401': BIGE_UNAUTHORIZED,
+    },
+    security: [
+      secureByBige(BIGE_API_STRATEGY, {scope:["myCustomScope/{id}"]})
+      BIGE_APP_STRATEGY
+    ]
+  })
+  @intercept(toInterceptor(new bigeMiddleWare(
+    "bige-api-key",
+    "header",
+    null
+  ).chk))
+  @intercept(toInterceptor(new bigeMiddleWare(
+    "bige-app-key",
+    "header",
+    null
+  ).chk))
+  endpointHandler(): {appID: Number, userID: Number} {
+    // you can perform anything you want with userID and appID
+    return {
+      userID: this.context.request.buser.ID,
+      appID: this.context.request.bapp.ID
+    };
+  }
+```
+
+## Advantage of LoopBack
+
+Bige've choosed loopback to make our first nodejjs API boilerplate for good reasons!
+
+- loopback offer a cli that ensure that your OAS doc feel good
+- loopback structure is relatively complete and elegant
+- the architecture ensure that you are concentrated on your tasks.
+- and more also thats somes cli command to help you to get started
+
+### create a datasource
+
+Loopback datasource allow you to integrate and migrate your models from a DB to another one...
+thats probably the first thing you wanna do with your API so with the command below you can create datasources for POSTRGRES, MONGO, MYSQL, REDIS, ORACLE, SOAP and a lot more...
+
+```sh
+lb4 datasource // then follow command
+```
+
+### create a model
+
+One of the first thing that make Nodejs API wrong is typed models.
+Also lb4 help you to make it faster and better, also you'll modifying it directly cause somes of types and formats depends of your datasource choice...
+
+```sh
+lb4 model // and follow command...
+```
+
+### create a repository
+
+As you know, to bind any model to any controller you'll need a repo...
+So to write less code just tip this CLI command to get your first repo :
+
+```sh
+lb4 repository // select your model and datasource then follow the command...
+```
+
+### And the almost usecase with loopback CREATE YOUR ENDPOINTS CONTROLLERS
+
+We know that somes api only need endpoints with another proxy to secure your local/private IT and make your data readable under your walls...
+
+So to create a repo you don't need anything more that this command line :
+
+```sh
+lb4 controller // then follow from your needs...
+```
+
+## ALL you need is product
+
+Anyway after this install, you'll be able to deploy your API on APIM.BIGE.DEV and without any kind of problems or difficulty.
 
 ## PROJECT FRST RUN
 
