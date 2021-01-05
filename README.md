@@ -43,6 +43,17 @@ For your local test and debug, BigeMiddleWare will create and return valid keys 
 
 BSSDK middleware is running as interceptor with loopback, also you can secure any API endpoint by adding the following code before your endpoint handler.
 
+### Secure one endpoint with our middleware
+
+The first usecase if to secure your endpoint from APIM proxy authorization strategy.
+So from apim, this first usecase only retrieve a 401 unauthorized by default without any call on your API.
+note that any endpoint that integrate this middleware only catch any that trying to consume without prior apim ACCESS validation. So if you just wanna private a endpoint access tip this :
+
+```javascript
+  @intercept(toInterceptor(new bigeMiddleWare().chk))
+```
+
+
 ### Checking application access authorization and retieve the current application ID
 
 ```javascript
@@ -267,6 +278,18 @@ This is a sample Handler that retrieve an app Key and an user Key with IDs :
     };
   }
 ```
+
+### Secure your API access to authorized apps and users without other needs
+
+Sometime and to go fast you don't need any analyse but only a secure access right!
+this is our first usecase ;-)
+But to secure any api endpoint you'll modifying your master sequence file by adding this line before any handler:
+
+```javascript
+import BSSDK from './lib/bigeSSDK'; // first import the yarn and npm package is coming soon...
+BSSDK() // then add this in your sequence before any handler
+```
+
 
 ## Advantage of LoopBack
 
