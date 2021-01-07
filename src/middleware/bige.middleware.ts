@@ -52,6 +52,7 @@ export class bigeMiddleWare {
     if (!entry.key)
       throw new HttpErrors.Unauthorized(`UNAUTHORIZED - ${key}`)
 
+    // relace scope anyway : {param.key} by params.key any
     if (Array.isArray(this.check[key].value))
       for (let chekKey of this.check[key].value)
         chekKey = chekKey.replace(`{${key}}`, params[key].toString())
@@ -164,9 +165,7 @@ export const APP_SECURITY_SCHEME =
   "type": ["apiKey"],
   "in": ["header"],
   "bearerFormat": ["JWT"],
-  "name": ["bige-app-key"],
-  "scopes": [],
-  "rights": []
+  "name": ["bige-app-key"]
 };
 
 export const USER_SECURITY_SCHEME =
@@ -175,6 +174,8 @@ export const USER_SECURITY_SCHEME =
   "in": ["header"],
   "bearerFormat": ["JWT"],
   "name": ["bige-api-key"],
+  "scopes": [],
+  "rights": []
 };
 
 export const bigeCustomSecurity = (entry: {[key: string]: string[] | string}, options: {[key: string]: string[] | string}): SecurityRequirementObject => {
