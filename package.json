@@ -1,7 +1,7 @@
 {
   "name": "APIMlb4",
   "version": "0.0.1",
-  "description": "bige loopback boilerplate with BSSDK middleware",
+  "description": "bige loopback boilerplate with BSSDK middleware. this API example illustrate the apim.bige.dev usecase by binding a middleware on a REST API example controller endpoints. to get more informations about apim gateway please visit https://apim.bige.dev",
   "keywords": [
     "loopback-application",
     "loopback"

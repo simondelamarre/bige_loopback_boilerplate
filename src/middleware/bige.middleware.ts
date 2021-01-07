@@ -37,10 +37,9 @@ export class bigeMiddleWare {
         for (const key of Object.keys(this.check)) {
           if (!decrypt[key].key)
             throw new HttpErrors.Unauthorized(`UNAUTHORIZED - access ${key}`)
-          else {
-            if (!this.validate(decrypt, key))
+          else
+            if (!this.validate(decrypt, key, request.params))
               throw new HttpErrors.Unauthorized(`UNAUTHORIZED - access ${this.check[key]}`)
-          }
         }
       }
       if (decrypt)
@@ -49,9 +48,19 @@ export class bigeMiddleWare {
       throw new HttpErrors.Unauthorized('UNAUTHORIZED - by bige');
     }
   }
-  private validate = (entry: {[key: string]: string | string[]}, key: string) => {
+  private validate = (entry: {[key: string]: string | string[]}, key: string, params: {[key: string]: string}) => {
     if (!entry.key)
       throw new HttpErrors.Unauthorized(`UNAUTHORIZED - ${key}`)
+
+    if (Array.isArray(this.check[key].value))
+      for (let chekKey of this.check[key].value)
+        chekKey = chekKey.replace(`{${key}}`, params[key].toString())
+    else if (typeof this.check[key].value == "string") {
+      let k = this.check[key].value as string;
+      k = k.replace(`{${key}}`, params[key])
+      this.check[key].value = k;
+    }
+
     switch (this.check[key].operator) {
       case 'In':
         if (Array.isArray(this.check[key].value))

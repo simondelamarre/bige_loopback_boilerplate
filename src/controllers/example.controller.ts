@@ -29,7 +29,7 @@ export class ExampleController {
 
   @post('/example', {
     summary: "Example Bige middleware user ACCESS checkin",
-    Desription: "In this example endpoint Bige MiddleWare check user logged and access right from apim.bige.dev is validated by your app secret setup",
+    description: "In this example endpoint Bige MiddleWare check user logged and access right from apim.bige.dev is validated by your app secret setup",
     responses: {
       '200': {
         description: 'Example model instance',
@@ -86,7 +86,7 @@ export class ExampleController {
 
   @get('/example', {
     summary: "Example Bige middleware ACCESS checkin",
-    Desription: "In this example endpoint Bige MiddleWare check the client access right from apim.bige.dev is validated by your app secret setup",
+    description: "In this example endpoint Bige MiddleWare check the client access right from apim.bige.dev is validated by your app secret setup",
     responses: {
       '200': {
         description: 'Array of Example model instances',
@@ -98,8 +98,8 @@ export class ExampleController {
             },
           },
         },
-        '401': BIGE_UNAUTHAURIZED
       },
+      '401': BIGE_UNAUTHAURIZED
     },
     security: [API_SECURITY_SCHEME],
     tags: ['example']
