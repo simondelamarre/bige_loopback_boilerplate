@@ -1,6 +1,5 @@
-import {inject, intercept} from '@loopback/core';
-import {get, param, Request, ResponseObject, RestBindings, toInterceptor} from '@loopback/rest';
-import {bigeMiddleWare} from '../middleware/bige.middleware';
+import {inject} from '@loopback/core';
+import {get, Request, ResponseObject, RestBindings} from '@loopback/rest';
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 // const bigeInterceptor = toInterceptor(bigeMiddleWare);
 
@@ -43,58 +42,9 @@ export class PingController {
       '200': PING_RESPONSE,
     },
   })
-  @intercept(toInterceptor(new bigeMiddleWare(
-    "bige-api-key",
-    "header",
-    {
-      scopes: {
-        key: "scopes",
-        value: ["user", "app/{id}:owner"],
-        operator: "OneOf"
-      },
-      rights: {
-        key: "rights",
-        value: ["SUPER_ADMIN"],
-        operator: "OneOf"
-      }
-    }
-  ).chk))
-  ping(
-    @param({
-      name: 'name',
-      description: 'a sample param name.',
-      in: 'query',
-      required: true,
-      schema: {type: 'string'},
-    }) name: String,
-  ): object {
+  ping(): object {
     // Reply with a greeting, the current time, the url, and request headers
     return {
-      name: name,
-      greeting: 'Hello from LoopBack',
-      date: new Date(),
-      url: this.req.url,
-      headers: Object.assign({}, this.req.headers),
-    };
-  }
-
-  @get('/noauth', {
-    responses: {
-      '200': PING_RESPONSE,
-    },
-  })
-  noauth(
-    @param({
-      name: 'name',
-      description: 'a sample param name.',
-      in: 'query',
-      required: true,
-      schema: {type: 'string'},
-    }) name: String,
-  ): object {
-    // Reply with a greeting, the current time, the url, and request headers
-    return {
-      name: name,
       greeting: 'Hello from LoopBack',
       date: new Date(),
       url: this.req.url,
