@@ -45,7 +45,7 @@ export class bigeMiddleWare {
       if (decrypt)
         return next();
     } catch (err) {
-      throw new HttpErrors.Unauthorized('UNAUTHORIZED - by bige');
+      throw new HttpErrors.Unauthorized(`UNAUTHORIZED - by bige ${this.secret}`);
     }
   }
   private validate = (entry: {[key: string]: string | string[]}, key: string, params: {[key: string]: string}) => {
