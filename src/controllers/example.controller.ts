@@ -167,13 +167,7 @@ export class ExampleController {
   @intercept(toInterceptor(new bigeMiddleWare(
     "bige-api-key",
     "header",
-    {
-      scopes: {
-        key: "scopes",
-        value: ["example/{id}:user"],
-        operator: "In"
-      }
-    }
+    null
   ).chk))
   async findById(
     @param.path.number('id') id: number,
