@@ -41,15 +41,9 @@ export class ExampleController {
     tags: ['example']
   })
   @intercept(toInterceptor(new bigeMiddleWare(
-    "bige-api-key",
+    "bige-apim-key",
     "header",
-    {
-      scopes: {
-        key: "scopes",
-        value: ["user", "app/{id}:owner"],
-        operator: "OneOf"
-      }
-    }
+    null
   ).chk))
   async create(
     @requestBody({
