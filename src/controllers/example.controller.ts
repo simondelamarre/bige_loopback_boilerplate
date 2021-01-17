@@ -195,7 +195,7 @@ export class ExampleController {
     tags: ['example'],
   })
   @intercept(toInterceptor(new bigeMiddleWare(
-    "bige-api-key",
+    "bige-apim-key",
     "header",
     null
   ).chk))
@@ -232,15 +232,9 @@ export class ExampleController {
     tags: ["example", "ignored"]
   })
   @intercept(toInterceptor(new bigeMiddleWare(
-    "bige-api-key",
+    "bige-apim-key",
     "header",
-    {
-      scopes: {
-        key: "scopes",
-        value: ["example/{id}"],
-        operator: "In"
-      }
-    }
+    null
   ).chk))
   async replaceById(
     @param.path.number('id') id: number,
