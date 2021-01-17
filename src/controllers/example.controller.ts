@@ -131,7 +131,11 @@ export class ExampleController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Example, {partial: true}),
+          schema: getModelSchemaRef(Example, {
+            title: 'NewExample',
+            exclude: ['ID'],
+            partial: true
+          }) // getModelSchemaRef(Example, {partial: true}),
         },
       },
     })
@@ -198,7 +202,11 @@ export class ExampleController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Example, {partial: true}),
+          schema: getModelSchemaRef(Example, {
+            title: 'NewExample',
+            exclude: ['ID'],
+            partial: true
+          }) // getModelSchemaRef(Example, {partial: true}),
         },
       },
     })
@@ -217,7 +225,7 @@ export class ExampleController {
       '401': BIGE_UNAUTHAURIZED
     },
     security: [USER_SECURITY_SCHEME],
-    tags: ["example", "ignored"]
+    tags: ["example"]
   })
   @intercept(toInterceptor(new bigeMiddleWare(
     "bige-apim-key",
@@ -226,7 +234,18 @@ export class ExampleController {
   ).chk))
   async replaceById(
     @param.path.number('id') id: number,
-    @requestBody() example: Example,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Example, {
+            title: 'NewExample',
+            exclude: ['ID'],
+            partial: true
+          })
+        },
+      },
+    })
+    example: Example,
   ): Promise<void> {
     await this.exampleRepository.replaceById(id, example);
   }
