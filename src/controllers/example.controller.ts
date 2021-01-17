@@ -125,13 +125,7 @@ export class ExampleController {
   @intercept(toInterceptor(new bigeMiddleWare(
     "bige-api-key",
     "header",
-    {
-      rights: {
-        key: "rights",
-        value: ["SUPER_ADMIN"],
-        operator: "OneOf"
-      }
-    }
+    null
   ).chk))
   async updateAll(
     @requestBody({
@@ -255,18 +249,7 @@ export class ExampleController {
   @intercept(toInterceptor(new bigeMiddleWare(
     "bige-api-key",
     "header",
-    {
-      scopes: {
-        key: "scopes",
-        value: ["example/{id}:owner"],
-        operator: "In"
-      },
-      rights: {
-        key: "rights",
-        value: ["ADMIN"],
-        operator: "OneOf"
-      }
-    }
+    null
   ).chk))
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.exampleRepository.deleteById(id);
