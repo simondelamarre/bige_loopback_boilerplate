@@ -11,8 +11,9 @@ export class Example extends Entity {
 
   @property({
     type: 'string',
+    required: true,
   })
-  name?: string;
+  name: string;
 
 
   constructor(data?: Partial<Example>) {

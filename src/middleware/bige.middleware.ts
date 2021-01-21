@@ -42,8 +42,23 @@ export class bigeMiddleWare {
               throw new HttpErrors.Unauthorized(`UNAUTHORIZED - access ${this.check[key]}`)
         }
       }
-      if (decrypt)
+      if (decrypt) {
+        switch (this.keyName) {
+          case 'bige-api-key':
+            request.params.buser = decrypt;
+            break;
+          case 'bige-app-key':
+            request.params.bapp = decrypt;
+            break;
+          case 'bige-public-key':
+            request.params.bpub = decrypt;
+            break;
+          case 'bige-apim-key':
+            request.params.bapi = decrypt;
+            break;
+        }
         return next();
+      }
     } catch (err) {
       throw new HttpErrors.Unauthorized(`UNAUTHORIZED - by bige ${this.secret} keyName ${this.keyName} key ${request.headers[this.keyName]}`);
     }

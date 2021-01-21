@@ -1,4 +1,4 @@
-import {intercept} from '@loopback/core';
+import {inject, intercept} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -15,6 +15,7 @@ import {
   post,
   put,
   requestBody,
+  RequestContext,
   toInterceptor
 } from '@loopback/rest';
 import {API_SECURITY_SCHEME, APP_SECURITY_SCHEME, bigeCustomSecurity, bigeMiddleWare, BIGE_UNAUTHAURIZED, USER_SECURITY_SCHEME} from '../middleware/bige.middleware';
@@ -23,6 +24,7 @@ import {ExampleRepository} from '../repositories';
 
 export class ExampleController {
   constructor(
+    @inject.context() public context: RequestContext,
     @repository(ExampleRepository)
     public exampleRepository: ExampleRepository,
   ) { }
@@ -272,5 +274,111 @@ export class ExampleController {
   ).chk))
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.exampleRepository.deleteById(id);
+  }
+
+
+  /**
+   * APIM SETUPS TEST AND RESPONSES CODES
+   *
+   */
+
+  @get('/example/oneRequestPerMinute', {
+    summary: "I am a quotas limited endpoint",
+    description: "This endpoint is limited to one request per mminutee by APIM APIs FRACTION proxy provider setup and without other security scheme.",
+    responses: {
+      '200': {
+        description: 'Example model count',
+        content: {'application/json': {schema: {message: String}}},
+      }, // You also can define the others BSSDK middleware status codes
+    },
+    tags: ['example']
+  })
+  async limit(
+  ): Promise<{message: String}> {
+    return {message: "limitation quotas passed other status not documented"};
+  }
+
+  @get('/example/userLogged', {
+    summary: "This endpoint is secure by user logged in only",
+    description: "By using bige-api-key secutiry scheme, this endpoint will return a 401 UNAUTHORIZED status code when there is no user logged by the application request...",
+    responses: {
+      '200': {
+        description: 'Example model count',
+        content: {'application/json': {schema: {message: String, user: Object}}},
+      }, // You also can define the others BSSDK middleware status codes - 401 anyway
+    },
+    tags: ['example']
+  })
+  @intercept(toInterceptor(new bigeMiddleWare(
+    "bige-api-key",
+    "header",
+    null
+  ).chk))
+  async logged(
+  ): Promise<{message: String, user: unknown}> {
+    return {message: `The request has been performed by a logged user`, user: this.context.request.params.buser};
+  }
+
+  @get('/example/wichApp', {
+    summary: "This endpoint check and retrieve from wich app",
+    description: "By using bige-app-key secutiry scheme, this endpoint will return a 401 UNAUTHORIZED status code when there is no confirmed application from request... also its retrieve ssomes application informations such as appID",
+    responses: {
+      '200': {
+        description: 'Example model count',
+        content: {'application/json': {schema: CountSchema}},
+      }, // You also can define the others BSSDK middleware status codes - 401 anyway
+    },
+    tags: ['example']
+  })
+  @intercept(toInterceptor(new bigeMiddleWare(
+    "bige-api-key",
+    "header",
+    null
+  ).chk))
+  async wich(
+  ): Promise<{message: String, app: unknown}> {
+    return {message: `The request has been performed by a valid application`, app: this.context.request.params.bapp};
+  }
+
+  @get('/example/itsMe', {
+    summary: "This endpoint check and retrieve if its really your api",
+    description: "By using bige-apim-key secutiry scheme, this endpoint will return a 401 UNAUTHORIZED status code when the signature of your API is wrong... also its retrieve somes informations such as your defined api ID on APIM",
+    responses: {
+      '200': {
+        description: 'Example model count',
+        content: {'application/json': {schema: {message: String, api: Object}}},
+      }, // You also can define the others BSSDK middleware status codes - 401 anyway
+    },
+    tags: ['example']
+  })
+  @intercept(toInterceptor(new bigeMiddleWare(
+    "bige-apim-key",
+    "header",
+    null
+  ).chk))
+  async itsme(
+  ): Promise<{message: String, api: unknown}> {
+    return {message: `The request has been performed and signed by your setup`, api: this.context.request.params.bapi};
+  }
+
+  @get('/example/doTheStuff', {
+    summary: "This endpoint let you make your stuf",
+    description: "If you don't wanna use the BSSDK middleware yoou can code yours by requesting the api keys in your request headers... Thats allow you to do what you want on your machine.",
+    responses: {
+      '200': {
+        description: 'Example model count',
+        content: {'application/json': {schema: {message: String, api: String, app: String, user: String}}},
+      }, // You also can define the others BSSDK middleware status codes - 401 anyway
+    },
+    tags: ['example']
+  })
+  async ido(
+  ): Promise<{message: String, api: unknown, app: unknown, user: unknown}> {
+    return {
+      message: `The request has been performed and signed by your setup`,
+      user: this.context.request.headers['bige-api-key'] ? this.context.request.headers['bige-api-key'] : "NOT SET",
+      app: this.context.request.headers['bige-app-key'] ? this.context.request.headers['bige-app-key'] : "NOT SET",
+      api: this.context.request.headers['bige-apim-key'] ? this.context.request.headers['bige-apim-key'] : "NOT SET",
+    };
   }
 }
